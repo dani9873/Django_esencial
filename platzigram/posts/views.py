@@ -1,6 +1,7 @@
 """Posts views."""
 
 #Django
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Utilities
@@ -8,10 +9,10 @@ from datetime import datetime
 
 posts = [
     {
-        'title': 'Mont Blac',
+        'title': 'Mont Blanc',
         'user': {
             'name': 'Yesica Cortes',
-            'picture': 'https://picsum.photos/id/1060/536/354?blur=2',
+            'picture': 'https://picsum.photos/536/354'
         },       
         'timestamp':datetime.now().strftime('%b %dth, %Y - %H:%M hrs'),
         'photo': 'https://picsum.photos/536/354',
@@ -20,7 +21,7 @@ posts = [
         'title': 'Via lactea',
         'user': {
             'name': 'C. Vander',
-            'picture': 'https://picsum.photos/id/1060/536/354?blur=2',
+            'picture': 'https://picsum.photos/536/354'
     },    
         'timestamp':datetime.now().strftime('%b %dth, %Y - %H:%M hrs'),
         'photo': "https://picsum.photos/id/237/536/354",
@@ -29,16 +30,16 @@ posts = [
         'title': 'Nuevo auditorio',
         'user': {
             'name': 'Thespianartist',
-            'picture': 'https://picsum.photos/id/1060/536/354?blur=2',
+            'picture': 'https://picsum.photos/536/354'
             },
         'timestamp':datetime.now().strftime('%b %dth, %Y - %H:%M hrs'),
         'photo': "https://picsum.photos/seed/picsum/536/354",
     }
 ]
-
+@login_required
 def list_posts(request):
     """List existing posts."""
-    return render(request, 'feed.html', {'posts': posts})
+    return render(request, 'posts/feed.html', {'posts': posts})
 
     #posts = [1, 2, 4]
     '''content = []
