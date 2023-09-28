@@ -2,53 +2,40 @@
 
 #Django
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-# Utilities
-from datetime import datetime
+# Forms
+from posts.forms import PostForm
 
-posts = [
-    {
-        'title': 'Mont Blanc',
-        'user': {
-            'name': 'Yesica Cortes',
-            'picture': 'https://picsum.photos/536/354'
-        },       
-        'timestamp':datetime.now().strftime('%b %dth, %Y - %H:%M hrs'),
-        'photo': 'https://picsum.photos/536/354',
-    },
-    {
-        'title': 'Via lactea',
-        'user': {
-            'name': 'C. Vander',
-            'picture': 'https://picsum.photos/536/354'
-    },    
-        'timestamp':datetime.now().strftime('%b %dth, %Y - %H:%M hrs'),
-        'photo': "https://picsum.photos/id/237/536/354",
-    },
-    {
-        'title': 'Nuevo auditorio',
-        'user': {
-            'name': 'Thespianartist',
-            'picture': 'https://picsum.photos/536/354'
-            },
-        'timestamp':datetime.now().strftime('%b %dth, %Y - %H:%M hrs'),
-        'photo': "https://picsum.photos/seed/picsum/536/354",
-    }
-]
+# Models
+from posts.models import Post
+
 @login_required
 def list_posts(request):
     """List existing posts."""
-    return render(request, 'posts/feed.html', {'posts': posts})
+    posts = Post.objects.all().order_by('-created')
+    
+    return render(request, 'posts/feed.html', {'posts':posts})
 
-    #posts = [1, 2, 4]
-    '''content = []
-    for post in posts:
-        content.append("""
-            <p><strong>{name}</strong></p>
-            <p><strong>{user} - <i>{timestamp}</i></strong></p>
-            <figure><img src= "{picture}"/></figure>
-        """.format(**post))'''            
+@login_required
+def create_post(request):
+    """Create new post view."""
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('feed')
         
-    #return HttpResponse(str(posts))
-    #return HttpResponse('<br>'.join(content))
+    else:
+        form = PostForm()
+        
+    return render(
+        request=request,
+        template_name='posts/new.html',
+        context={
+            'form': form,
+            'user': request.user,
+            'profile': request.user.profile
+        }
+    )
+
